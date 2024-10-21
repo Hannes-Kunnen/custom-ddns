@@ -59,7 +59,7 @@ export class WixProvider implements Provider {
             });
         }
 
-        const getDnsZoneResponseData: {dnsZone: WixDnsZone} = await getDnsZoneResponse.json();
+        const getDnsZoneResponseData = await getDnsZoneResponse.json() as {dnsZone: WixDnsZone};
         const dnsRecords = getDnsZoneResponseData.dnsZone.records
             .filter(record => record.type === recordType);
 
