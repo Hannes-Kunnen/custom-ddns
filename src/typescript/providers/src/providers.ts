@@ -17,7 +17,7 @@ type AllProviders<T = Required<ProvidersConfig>> = {
 };
 
 function isKnownProvider(name: string): name is keyof typeof allProviders {
-    return name in allProviders
+    return name in allProviders;
 }
 
 export function getProvider(

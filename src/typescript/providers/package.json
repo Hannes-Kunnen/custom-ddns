@@ -8,7 +8,8 @@
         "lint": "eslint index.ts \"src/**/*.ts\""
     },
     "dependencies": {
-        "punycode.js": "^2.3.0"
+        "punycode.js": "^2.3.0",
+        "validator": "^13.9.0"
     },
     "devDependencies": {
         "@types/node-fetch": "^2.6.4",

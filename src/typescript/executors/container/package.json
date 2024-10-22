@@ -6,8 +6,8 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "start": "node dist/index.js",
-        "build": "tsc",
+        "start": "node dist/bundle.cjs",
+        "build": "node build.js default",
         "lint": "eslint \"src/**/*.ts\""
     },
     "dependencies": {
@@ -15,6 +15,7 @@
     },
     "devDependencies": {
         "@types/node": "^22.7.7",
+        "esbuild": "^0.24.0",
         "pino-pretty": "^11.3.0",
         "typescript": "^5.0.4"
     }

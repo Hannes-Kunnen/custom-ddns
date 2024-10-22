@@ -1,11 +1,18 @@
+import * as fs from 'node:fs';
+
+import {
+    CustomError,
+    getUsernameAndPasswordFromBasicAuth,
+    parseConfig,
+    updateIp,
+    validateRequestParams,
+} from 'ddns-base';
 import type {FastifyBaseLogger} from 'fastify';
 import Fastify from 'fastify';
 
-// import configData from '../../../../../config.yaml';
-
 let logger: FastifyBaseLogger | undefined;
 
-export const startServer = async () => {
+const startServer = async () => {
     let loggerConfig;
     if (process.env.NODE_ENV === 'development') {
         loggerConfig = {
@@ -40,25 +47,12 @@ export const startServer = async () => {
         }
     }
 
-    // const config = parseConfig(configData);
-
-    // Graceful shutdown.
-    // const listeners = ['SIGINT', 'SIGTERM'];
-    // listeners.forEach((signal) => {
-    //     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    //     process.on(signal, async () => {
-    //         fastifyApp.log.info({
-    //             msg: 'Closing server...',
-    //             signal: signal,
-    //         });
-    //         await fastifyApp.close();
-    //         process.exit(0);
-    //     });
-    // });
+    // Load yaml config
+    const config = parseConfig(fs.readFileSync('../../../../config.yaml', {encoding: 'utf-8'}));
 
     fastifyApp.setNotFoundHandler(async (request, reply) => {
         request.log.info(`Route ${request.method}:${request.url} not found`);
-        await reply.status(404).send('Not found');
+        return reply.status(404).send('Not found');
     });
 
     interface UpdateIpQuery {
@@ -104,54 +98,52 @@ export const startServer = async () => {
 
         handler: async (request, reply) => {
             if (request.query.ip === undefined) {
-                await reply.status(422).send('ip query parameter absent');
+                return reply.status(422).send('ip query parameter absent');
             }
 
             const authorization = request.headers.authorization;
             if (authorization === undefined) {
-                await reply
+                return reply
                     .status(401)
                     .header('WWW-authenticate', 'Basic')
                     .send('Request must bear Authorization header with Basic auth');
             }
 
             try {
-                // const validated = validateRequestParams({
-                //     ip: request.query.ip!,
-                //     hosts: request.query.hosts,
-                //     tags: request.query.tags,
-                // });
-                // console.log(`validated:`, validated);
-                //
-                // await updateIp({
-                //     config: config,
-                //     env: process.env,
-                //     ip: validated.ip,
-                //     ipVersion: validated.ipVersion,
-                //     providedPassword: getUsernameAndPasswordFromBasicAuth(authorization!).password,
-                //     requestHosts: validated.hosts,
-                //     tags: validated.tags,
-                // });
-                await reply.status(200).send('OK');
+                const validated = validateRequestParams({
+                    ip: request.query.ip,
+                    hosts: request.query.hosts,
+                    tags: request.query.tags,
+                });
+
+                await updateIp({
+                    config: config,
+                    env: process.env,
+                    ip: validated.ip,
+                    ipVersion: validated.ipVersion,
+                    providedPassword: getUsernameAndPasswordFromBasicAuth(authorization).password,
+                    requestHosts: validated.hosts,
+                    tags: validated.tags,
+                });
+                return await reply.status(200).send('OK');
             } catch (error) {
-                // if (error instanceof CustomError) {
-                //     request.log.error(error);
-                //     await reply
-                //         .status(error.status ?? 500)
-                //         .headers({
-                //             'Content-Type': 'text/plain',
-                //             ...error.responseHeaders,
-                //         })
-                //         .send(error.message);
-                // }
+                if (error instanceof CustomError) {
+                    request.log.error(error);
+                    return reply
+                        .status(error.status ?? 500)
+                        .headers({
+                            'Content-Type': 'text/plain',
+                            ...error.responseHeaders,
+                        })
+                        .send(error.message);
+                }
 
                 request.log.error(error);
-                await reply.status(500).send('Failure');
+                return reply.status(500).send('Failure');
             }
         },
     });
 
-    // Run the server!
     await fastifyApp.listen({port: port});
 };
 

@@ -1,9 +1,9 @@
 import {CustomError} from 'ddns-base';
 import * as punycode from 'punycode.js';
+import isFQDN from 'validator/es/lib/isFQDN';
 
 import type {Provider, UpdateIpInput} from '../provider.interface';
 import type {CloudflareProviderConfig} from './config.interface';
-import isFQDN from 'validator/es/lib/isFQDN';
 
 export class CloudflareProvider implements Provider {
 

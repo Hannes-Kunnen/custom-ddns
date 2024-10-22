@@ -1,12 +1,6 @@
 {
     "extends": "../../../../tsconfig.base.json",
     "include": [
-        "src/index.ts",
-        "global.d.ts",
         "src/**/*.ts"
-    ],
-    "compilerOptions": {
-        "outDir": "./dist",
-        "noEmit": false
-    }
+    ]
 }

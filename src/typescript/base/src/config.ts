@@ -31,15 +31,15 @@ export function parseConfig(configString: string): Config {
 
     let configIndex = 0;
     for (const item of validatedConfig.configs) {
-        for (const [providerName, config] of Object.entries(item.providers)) {
+        for (const [providerName, providerConfig] of Object.entries(item.providers)) {
             try {
-                const provider = getProvider(providerName, config)
-                provider.assertValidConfig()
+                const provider = getProvider(providerName, providerConfig);
+                provider.assertValidConfig();
             } catch (e) {
                 throw new CustomError({
                     message: `Failed to validate DDNS config[${configIndex}].${providerName}.`,
                     originalError: e,
-                })
+                });
             }
         }
         configIndex++;
