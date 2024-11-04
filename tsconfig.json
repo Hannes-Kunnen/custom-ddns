@@ -15,6 +15,9 @@
             "path": "./src/typescript/executors/cloudflare-worker/tsconfig.json"
         },
         {
+            "path": "./src/typescript/executors/container/tsconfig.json"
+        },
+        {
             "path": "./src/typescript/providers/tsconfig.json"
         },
     ],

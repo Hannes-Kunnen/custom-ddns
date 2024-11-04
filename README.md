@@ -33,6 +33,7 @@ Executors implement a public web server that takes requests from the routers. An
 
 Currently supported (platform/language):
 - [Cloudflare Workers/TypeScript](./src/typescript/executors/cloudflare-worker)
+- [Container/TypeScript](./src/typescript/executors/container)
 
 ### Providers
 Providers are executed by the _Executors_ and contain the DNS provider specific code for updating the DNS records.
