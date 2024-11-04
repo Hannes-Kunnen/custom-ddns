@@ -50,8 +50,8 @@ export async function updateIp(
             });
         }
 
-        for (let [providerName, config] of Object.entries(c.providers)) {
-            const provider = getProvider(providerName, config);
+        for (const [providerName, providerConfig] of Object.entries(c.providers)) {
+            const provider = getProvider(providerName, providerConfig);
             await provider.updateIp({
                 getVariable: getVariableIntermediate,
                 ip,
